@@ -97,6 +97,7 @@ public class PlayerController : MonoBehaviour, Controls.IPlayerActions
         if (!isMoveAvailable)
         {
             _isUpgrading = true;
+            _rb2d.linearVelocityX = 0;
             _rb2d.linearVelocityY = 0;
             return;
         }
