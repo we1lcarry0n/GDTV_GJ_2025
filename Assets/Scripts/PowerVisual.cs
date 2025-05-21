@@ -10,8 +10,6 @@ public class PowerVisual : MonoBehaviour
     [SerializeField] private Button _buttonControls;
     [SerializeField] private GameObject _equippedMask;
 
-    private bool _isEquipped = false;
-
     public void ApplyPower()
     {
         _upgradeController.ClearUpgradeInCurrentSlot();
@@ -21,14 +19,12 @@ public class PowerVisual : MonoBehaviour
 
     private void MarkEquipped()
     {
-        _isEquipped = true;
         _buttonControls.interactable = false;
         _equippedMask.SetActive(true);
     }
 
     public void MarkUnequipped()
     {
-        _isEquipped = false;
         _buttonControls.interactable = true;
         _equippedMask.SetActive(false);
     }

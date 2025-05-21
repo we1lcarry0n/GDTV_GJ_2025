@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -12,6 +13,7 @@ public class PlayerController : MonoBehaviour, Controls.IPlayerActions
     [SerializeField] private Transform _playerShield;
 
     private Rigidbody2D _rb2d;
+    private PlayerHealth _playerHealth;
     private Controls _controls;
 
     private float _currentSpeedX;
@@ -19,6 +21,8 @@ public class PlayerController : MonoBehaviour, Controls.IPlayerActions
     private float _yVelocityThreshold = .001f;
 
     private bool _isUpgrading = false;
+    private bool _isBeingHit = false;
+    private Coroutine _beingHitRoutine;
 
     private void OnEnable()
     {
@@ -35,6 +39,7 @@ public class PlayerController : MonoBehaviour, Controls.IPlayerActions
     private void Start()
     {
         _rb2d = GetComponent<Rigidbody2D>();
+        _playerHealth = GetComponent<PlayerHealth>();
         _currentSpeedX = _speedX;
     }
 
@@ -44,9 +49,60 @@ public class PlayerController : MonoBehaviour, Controls.IPlayerActions
         {
             return;
         }
-        _rb2d.linearVelocityX = _currentSpeedX;
+        if (!_isBeingHit)
+        {
+            _rb2d.linearVelocityX = _currentSpeedX;
+        }
         CalculateVerticalVelocity();
         CalculateShieldRotation();
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("Stone"))
+        {
+            _playerHealth.ReceiveDamage(5f);
+            if (_beingHitRoutine != null)
+            {
+                StopCoroutine( _beingHitRoutine);
+            }
+            _isBeingHit = true;
+            float bumpForce = collision.relativeVelocity.magnitude;
+            Debug.Log(bumpForce);
+            Vector2 collisionNormalVector = collision.contacts[0].normal;
+            _rb2d.AddForce(collisionNormalVector * bumpForce, ForceMode2D.Impulse);
+            _beingHitRoutine = StartCoroutine(RockHitRoutine());
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Dirt"))
+        {
+            _acceleration *= 4f;
+            _deceleration /= 2f;
+            _speedY *= 2f;
+            _currentSpeedX *= 1.5f;
+        }    
+    }
+
+    private void OnTriggerStay2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Lava"))
+        {
+            _playerHealth.ReceiveDamage(.06f);
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Dirt"))
+        {
+            _acceleration /= 4f;
+            _deceleration *= 2f;
+            _speedY /= 2f;
+            _currentSpeedX /= 1.5f;
+        }
     }
 
     private void CalculateVerticalVelocity()
@@ -84,6 +140,23 @@ public class PlayerController : MonoBehaviour, Controls.IPlayerActions
 
         float angle = Mathf.Atan2(mousePos.y, mousePos.x) * Mathf.Rad2Deg;
         _playerShield.rotation = Quaternion.Euler(new Vector3(0, 0, angle - 90f));
+    }
+
+    private IEnumerator RockHitRoutine()
+    {
+        while (_currentSpeedX > 0)
+        {
+            _currentSpeedX -= _acceleration * 10;
+            yield return new WaitForSeconds(.1f);
+        }
+        
+        while (_currentSpeedX <= _speedX)
+        {
+            _currentSpeedX += _acceleration;
+            _rb2d.linearVelocityX = _currentSpeedX;
+            yield return new WaitForSeconds(.15f);
+        }
+        _isBeingHit = false;
     }
 
     public void SetMovement(bool isMoveAvailable)

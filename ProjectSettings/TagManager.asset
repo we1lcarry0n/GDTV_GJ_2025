@@ -5,6 +5,10 @@ TagManager:
   serializedVersion: 3
   tags:
   - UpgradePoint
+  - Stone
+  - Lava
+  - Dirt
+  - Shield
   layers:
   - Default
   - TransparentFX
