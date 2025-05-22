@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using Unity.Cinemachine;
 using UnityEngine;
@@ -9,6 +10,7 @@ public class UpgradesController : MonoBehaviour
     [SerializeField] private GameObject _upgradeMenuUI;
     [SerializeField] private GameObject _powersSelectionScreen;
     [SerializeField] private List<Transform> _slotsToVisualize;
+    [SerializeField] private Animator _playerAnimator;
 
     private int _selectedSlotNumber;
     private PowerVisual[] _equippedPowers = new PowerVisual[6];
@@ -17,6 +19,7 @@ public class UpgradesController : MonoBehaviour
     {
         _upgradeCamera.Priority = 2;
         _upgradeMenuUI.SetActive(true);
+        StartCoroutine(MenuShowRoutine());
     }
 
     public void CloseUpgradeMenu()
@@ -24,6 +27,7 @@ public class UpgradesController : MonoBehaviour
         _playerController.SetMovement(true);
         _upgradeCamera.Priority = 0;
         _upgradeMenuUI.SetActive(false);
+        _playerAnimator.SetTrigger("cocoonExit");
     }
 
     public void OpenPowerSelection(int slotNumber)
@@ -56,5 +60,11 @@ public class UpgradesController : MonoBehaviour
             _equippedPowers[_selectedSlotNumber].MarkUnequipped();
         }
         _equippedPowers[_selectedSlotNumber] = null;
+    }
+
+    private IEnumerator MenuShowRoutine()
+    {
+        yield return new WaitForSeconds(2f);
+        _playerAnimator.SetTrigger("cocoonEnter");
     }
 }

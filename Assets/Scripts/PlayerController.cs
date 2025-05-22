@@ -10,6 +10,7 @@ public class PlayerController : MonoBehaviour, Controls.IPlayerActions
     [SerializeField] private float _acceleration;
     [SerializeField] private float _deceleration;
 
+    [SerializeField] private Animator _animator;
     [SerializeField] private Transform _playerShield;
 
     private Rigidbody2D _rb2d;
@@ -61,6 +62,7 @@ public class PlayerController : MonoBehaviour, Controls.IPlayerActions
     {
         if (collision.gameObject.CompareTag("Stone"))
         {
+            _animator.SetTrigger("bumped");
             _playerHealth.ReceiveDamage(5f);
             if (_beingHitRoutine != null)
             {
@@ -149,7 +151,7 @@ public class PlayerController : MonoBehaviour, Controls.IPlayerActions
             _currentSpeedX -= _acceleration * 10;
             yield return new WaitForSeconds(.1f);
         }
-        
+        _animator.SetTrigger("accelerated");
         while (_currentSpeedX <= _speedX)
         {
             _currentSpeedX += _acceleration;

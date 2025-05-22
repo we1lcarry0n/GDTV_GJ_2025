@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
+    [SerializeField] private Animator _animator;
     [SerializeField] private float _xRangeDetection;
     [SerializeField] private float _shootingRate;
     [SerializeField] private float _playerOffsetX;
@@ -43,9 +44,15 @@ public class Enemy : MonoBehaviour
 
     private void Shoot()
     {
-        Debug.Log("Shoot");
+        _animator.SetTrigger("shoot");
+    }
+
+    public void SpawnProjectile()
+    {
         GameObject projectile = Instantiate(_projectilePrefab, transform.position, Quaternion.identity);
         Vector2 desiredVector = (_playerTransform.position + new Vector3(_playerOffsetX, 0, 0)) - transform.position;
+        projectile.transform.up = -(_playerTransform.position - transform.position);
+        //projectile.transform.LookAt(new Vector3(_playerTransform.position.x, _playerTransform.position.y, -90));
         projectile.GetComponent<Projectile>().InitializeProjectile(desiredVector);
     }
 

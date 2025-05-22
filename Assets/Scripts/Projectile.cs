@@ -11,7 +11,7 @@ public class Projectile : MonoBehaviour
 
     private void FixedUpdate()
     {
-        _rb2d.linearVelocity = _desiredVector;
+        _rb2d.linearVelocity = _desiredVector * _speed;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
