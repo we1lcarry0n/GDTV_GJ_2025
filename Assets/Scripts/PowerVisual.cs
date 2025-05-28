@@ -10,10 +10,13 @@ public class PowerVisual : MonoBehaviour
     [SerializeField] private Button _buttonControls;
     [SerializeField] private GameObject _equippedMask;
 
+    public int upgradeIndex;
+
     public void ApplyPower()
     {
         _upgradeController.ClearUpgradeInCurrentSlot();
         _upgradeController.ApplyUpgradeInCurrentSlot(this, _powerVisualObject);
+        _powerLogic.ApplyUpgrade();
         MarkEquipped();
     }
 

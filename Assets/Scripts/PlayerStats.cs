@@ -2,15 +2,18 @@ using UnityEngine;
 
 public class PlayerStats : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
+    [SerializeField] private PlayerHealth _health;
+    [SerializeField] private PlayerController _controller;
+    [SerializeField] private ShieldHealth _shieldHealth;
 
-    // Update is called once per frame
-    void Update()
+    [SerializeField] private float _playerHealthMax;
+    [SerializeField] private float _playerAcceleration;
+    [SerializeField] private float _playerDeceleration;
+    [SerializeField] private float _playerSpeedY;
+    [SerializeField] private float _playerShieldHealth;
+
+    public void SyncronizeUpgrades()
     {
-        
+
     }
 }

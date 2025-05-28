@@ -10,6 +10,10 @@ public class ShieldHealth : MonoBehaviour
     [SerializeField] private Collider2D _shieldCollider;
     [SerializeField] private SpriteRenderer _shieldRenderer;
 
+    [SerializeField] private GameObject _normalShieldMask;
+    [SerializeField] private GameObject _circleShieldMask;
+    [SerializeField] private Collider2D _secondaryShieldCollider;
+
     private float _currentHealth;
     private float _timeSinceLastDamage;
     private bool _isBroken = false;
@@ -68,5 +72,34 @@ public class ShieldHealth : MonoBehaviour
         _shieldCollider.enabled = true;
         _shieldRenderer.enabled = true;
         _isBroken = false;
+    }
+
+    public void ModifyShieldHealth(float modifier)
+    {
+        _maxHealth *= modifier;
+        RefillHealth();
+        _shieldRenderer.color = Color.green;
+    }
+
+    public void HalfenShieldHealth()
+    {
+        _maxHealth *= .5f;
+        RefillHealth();
+    }
+
+    public void MakeShieldCircle()
+    {
+        _normalShieldMask.SetActive(false);
+        _circleShieldMask.SetActive(true);
+        _shieldCollider.enabled = false;
+        _secondaryShieldCollider.enabled = true;
+        _shieldCollider = _secondaryShieldCollider;
+    }
+
+    public void RemoveShield()
+    {
+        _isBroken = true;
+        _shieldCollider.enabled = false;
+        _shieldRenderer.enabled = false;
     }
 }

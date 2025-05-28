@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class Projectile : MonoBehaviour
@@ -8,6 +9,11 @@ public class Projectile : MonoBehaviour
     [SerializeField] private Rigidbody2D _rb2d;
 
     private Vector2 _desiredVector;
+
+    private void OnEnable()
+    {
+        StartCoroutine(DestructionRoutine());
+    }
 
     private void FixedUpdate()
     {
@@ -31,5 +37,11 @@ public class Projectile : MonoBehaviour
     public void InitializeProjectile(Vector2 desiredVector)
     {
         _desiredVector = desiredVector;
+    }
+
+    private IEnumerator DestructionRoutine()
+    {
+        yield return new WaitForSeconds(10f);
+        Destroy(gameObject);
     }
 }

@@ -13,6 +13,8 @@ public class PlayerController : MonoBehaviour, Controls.IPlayerActions
     [SerializeField] private Animator _animator;
     [SerializeField] private Transform _playerShield;
 
+    [SerializeField] private AudioSource _rockHitAS;
+
     private Rigidbody2D _rb2d;
     private PlayerHealth _playerHealth;
     private Controls _controls;
@@ -62,6 +64,7 @@ public class PlayerController : MonoBehaviour, Controls.IPlayerActions
     {
         if (collision.gameObject.CompareTag("Stone"))
         {
+            _rockHitAS.Play();
             _animator.SetTrigger("bumped");
             _playerHealth.ReceiveDamage(5f);
             if (_beingHitRoutine != null)
@@ -69,7 +72,7 @@ public class PlayerController : MonoBehaviour, Controls.IPlayerActions
                 StopCoroutine( _beingHitRoutine);
             }
             _isBeingHit = true;
-            float bumpForce = collision.relativeVelocity.magnitude;
+            float bumpForce = collision.relativeVelocity.magnitude * .75f;
             Debug.Log(bumpForce);
             Vector2 collisionNormalVector = collision.contacts[0].normal;
             _rb2d.AddForce(collisionNormalVector * bumpForce, ForceMode2D.Impulse);
@@ -81,9 +84,9 @@ public class PlayerController : MonoBehaviour, Controls.IPlayerActions
     {
         if (collision.CompareTag("Dirt"))
         {
-            _acceleration *= 4f;
+            _acceleration *= 3f;
             _deceleration /= 2f;
-            _speedY *= 2f;
+            _speedY *= 1.5f;
             _currentSpeedX *= 1.5f;
         }    
     }
@@ -100,9 +103,9 @@ public class PlayerController : MonoBehaviour, Controls.IPlayerActions
     {
         if (collision.CompareTag("Dirt"))
         {
-            _acceleration /= 4f;
+            _acceleration /= 3f;
             _deceleration *= 2f;
-            _speedY /= 2f;
+            _speedY /= 1.5f;
             _currentSpeedX /= 1.5f;
         }
     }
@@ -149,14 +152,14 @@ public class PlayerController : MonoBehaviour, Controls.IPlayerActions
         while (_currentSpeedX > 0)
         {
             _currentSpeedX -= _acceleration * 10;
-            yield return new WaitForSeconds(.1f);
+            yield return new WaitForSeconds(.05f);
         }
         _animator.SetTrigger("accelerated");
         while (_currentSpeedX <= _speedX)
         {
             _currentSpeedX += _acceleration;
             _rb2d.linearVelocityX = _currentSpeedX;
-            yield return new WaitForSeconds(.15f);
+            yield return new WaitForSeconds(.05f);
         }
         _isBeingHit = false;
     }
@@ -166,7 +169,9 @@ public class PlayerController : MonoBehaviour, Controls.IPlayerActions
         if (isMoveAvailable)
         {
             _isUpgrading = false;
+            _isBeingHit = false;
             _rb2d.linearVelocityY = 0;
+            _rb2d.linearVelocityX = _speedX;
             return;
         }
         if (!isMoveAvailable)
@@ -181,5 +186,26 @@ public class PlayerController : MonoBehaviour, Controls.IPlayerActions
     public void OnMove(InputAction.CallbackContext context)
     {
         _inputY = context.ReadValue<Vector2>().y;
+    }
+
+    public void IncreaseSpeedX(int speedAmountModifier)
+    {
+        _speedX += speedAmountModifier;
+        _currentSpeedX = _speedX;
+    }
+
+    public void IncreaseSpeedY(float speedAmountModifier)
+    {
+        _speedY += speedAmountModifier;
+    }
+
+    public void ModifyAcceleration(float speedAmountModifier)
+    {
+        _acceleration *= speedAmountModifier;
+    }
+
+    public void ModifyDeceleration(float speedAmountModifier)
+    {
+        _acceleration *= speedAmountModifier;
     }
 }

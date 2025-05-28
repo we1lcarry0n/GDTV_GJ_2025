@@ -1,9 +1,7 @@
 using System;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Power Logic", menuName = "Powers")]
-[Serializable]
-public class PowerLogic : ScriptableObject
+public abstract class PowerLogic : MonoBehaviour
 {
-    
+    public abstract void ApplyUpgrade();
 }
